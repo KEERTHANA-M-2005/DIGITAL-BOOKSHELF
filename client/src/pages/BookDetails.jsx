@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { getBook } from '../lib/api.js'
+import { useNavigate, useParams } from 'react-router-dom'
+import { getBook, toggleBookSave, updateProgress } from '../lib/api.js'
 import { sanitizeHtml } from '../lib/sanitize.js'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function BookDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   const [addedToCart, setAddedToCart] = useState(false)
+  const [saved, setSaved] = useState(false)
   const { addItem } = useCart()
   const { user } = useAuth()
 
@@ -25,6 +27,22 @@ export default function BookDetails() {
     }
     load()
   }, [id])
+
+  // Periodically record reading time while this page is active and visible
+  useEffect(() => {
+    if (!user) return
+    let intervalId
+    let isPageVisible = document.visibilityState === 'visible'
+    const onVisibility = () => { isPageVisible = document.visibilityState === 'visible' }
+    document.addEventListener('visibilitychange', onVisibility)
+    intervalId = setInterval(() => {
+      if (isPageVisible) updateProgress({ volumeId: id, secondsRead: 10 }).catch(()=>{})
+    }, 10000)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [id, user])
 
   if (loading) {
     return (
@@ -71,6 +89,15 @@ export default function BookDetails() {
     })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
+  }
+
+  const handleSave = async () => {
+    if (!user) {
+      navigate('/login', { replace: true })
+      return
+    }
+    const { saved } = await toggleBookSave(id)
+    setSaved(saved)
   }
 
   const tabs = [
@@ -164,6 +191,14 @@ export default function BookDetails() {
               }`}
             >
               {addedToCart ? '✓ Added to Cart!' : user ? 'Add to Cart' : 'Login to Add Cart'}
+            </button>
+            <button 
+              onClick={handleSave}
+              className={`flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 ${
+                saved ? 'bg-purple-100 text-purple-700 border-2 border-purple-300' : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl'
+              }`}
+            >
+              {saved ? 'Saved ✓' : '💾 Save Book'}
             </button>
           </div>
 
