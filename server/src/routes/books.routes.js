@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import axios from 'axios'
+import { requireAuth } from '../middleware/auth.js'
+import { User } from '../models/User.js'
 
 const router = Router()
 const googleBase = 'https://www.googleapis.com/books/v1'
@@ -47,6 +49,48 @@ router.get('/recommendations/mood', async (req, res) => {
     res.json(data)
   } catch (e) {
     res.status(500).json({ error: 'Failed to get recommendations' })
+  }
+})
+
+// Toggle like for a book (per-user)
+router.post('/:id/like', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(401).json({ error: 'Unauthorized' })
+    const idx = user.likedBooks.findIndex(v => v === id)
+    if (idx >= 0) {
+      user.likedBooks.splice(idx, 1)
+      await user.save()
+      return res.json({ liked: false })
+    } else {
+      user.likedBooks.push(id)
+      await user.save()
+      return res.json({ liked: true })
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to toggle like' })
+  }
+})
+
+// Toggle save for a book (per-user)
+router.post('/:id/save', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(401).json({ error: 'Unauthorized' })
+    const idx = user.savedBooks.findIndex(v => v === id)
+    if (idx >= 0) {
+      user.savedBooks.splice(idx, 1)
+      await user.save()
+      return res.json({ saved: false })
+    } else {
+      user.savedBooks.push(id)
+      await user.save()
+      return res.json({ saved: true })
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to toggle save' })
   }
 })
 

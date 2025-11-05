@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import BookCard from '../components/BookCard.jsx'
-import { searchBooks, listProgress, getBook } from '../lib/api.js'
+import { searchBooks, listProgress, getBook, recentBlogs } from '../lib/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Home() {
@@ -10,6 +10,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [continueReading, setContinueReading] = useState([])
   const [loadingProgress, setLoadingProgress] = useState(true)
+  const [recentBlogItems, setRecentBlogItems] = useState([])
   const { user } = useAuth()
 
   useEffect(() => {
@@ -56,6 +57,17 @@ export default function Home() {
       }
     }
     loadProgress()
+  }, [user])
+
+  useEffect(() => {
+    async function loadRecentBlogs() {
+      if (!user) { setRecentBlogItems([]); return }
+      try {
+        const data = await recentBlogs()
+        setRecentBlogItems(data)
+      } catch {}
+    }
+    loadRecentBlogs()
   }, [user])
 
   return (
@@ -141,6 +153,31 @@ export default function Home() {
           </div>
         )}
       </section>
+
+      {/* Recently Viewed Blogs */}
+      {user && (
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-white">🕮 Recently Viewed Blogs</h3>
+            <Link to="/blogs" className="text-blue-600 hover:text-blue-700 text-sm">View All →</Link>
+          </div>
+          {recentBlogItems.length === 0 ? (
+            <p className="text-sm text-gray-600 dark:text-gray-300">No recent blogs.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <div className="flex gap-4 pb-2">
+                {recentBlogItems.map(b => (
+                  <Link key={b._id} to={`/blogs/${b._id}`} className="min-w-[260px] p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                    <div className="font-medium text-gray-900 dark:text-white line-clamp-1">{b.title}</div>
+                    <div className="text-xs text-gray-500">by {b.username}</div>
+                    <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">{b.content}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Trending Books */}
       <section>
@@ -229,8 +266,9 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Community Posts</h3>
             <p className="text-gray-600 dark:text-gray-300">Read blogs and shorts from fellow readers</p>
-              <span className="text-xl md:text-2xl">🎥</span>
-            </div>
+            <span className="text-xl md:text-2xl">🎥</span>
+          </div> {/* Closing div for Community Posts */}
+          <div className="text-center"> {/* Added missing div for Community Reviews */}
             <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Community Reviews</h3>
             <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">Watch vlogs and shorts from fellow readers</p>
           </div>

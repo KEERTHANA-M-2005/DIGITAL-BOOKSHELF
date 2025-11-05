@@ -22,11 +22,15 @@ import booksRouter from './routes/books.routes.js'
 import blogsRouter from './routes/blogs.routes.js'
 import cartRouter from './routes/cart.routes.js'
 import progressRouter from './routes/progress.routes.js'
+import userRouter from './routes/user.routes.js'
+import ordersRouter from './routes/orders.routes.js'
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/progress', progressRouter)
+app.use('/api/user', userRouter)
+app.use('/api/orders', ordersRouter)
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
