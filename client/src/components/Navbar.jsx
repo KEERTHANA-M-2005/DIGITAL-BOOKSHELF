@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const { items } = useCart()
   const { theme, toggleTheme } = useTheme()
   const cartCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0)
@@ -93,12 +93,7 @@ export default function Navbar() {
               >
                 Profile
               </NavLink>
-              <button 
-                onClick={logout} 
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                Logout
-              </button>
+              {/* Logout moved to Profile page */}
             </div>
           ) : (
             <div className="flex items-center gap-2">
