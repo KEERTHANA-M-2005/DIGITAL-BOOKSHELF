@@ -8,7 +8,8 @@ const googleKey = process.env.GOOGLE_BOOKS_KEY
 router.get('/search', async (req, res) => {
   try {
     const { q } = req.query
-    const params = new URLSearchParams({ q: q || '', key: googleKey, maxResults: '20' })
+    const params = new URLSearchParams({ q: q || '', maxResults: '20' })
+    if (googleKey) params.set('key', googleKey)
     const { data } = await axios.get(`${googleBase}/volumes?${params.toString()}`)
     res.json(data)
   } catch (e) {
@@ -19,7 +20,8 @@ router.get('/search', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const params = new URLSearchParams({ key: googleKey })
+    const params = new URLSearchParams()
+    if (googleKey) params.set('key', googleKey)
     const { data } = await axios.get(`${googleBase}/volumes/${id}?${params.toString()}`)
     res.json(data)
   } catch (e) {
@@ -39,7 +41,8 @@ router.get('/recommendations/mood', async (req, res) => {
   }
   const q = moodMap[mood] || 'bestseller'
   try {
-    const params = new URLSearchParams({ q, key: googleKey, maxResults: '10' })
+    const params = new URLSearchParams({ q, maxResults: '10' })
+    if (googleKey) params.set('key', googleKey)
     const { data } = await axios.get(`${googleBase}/volumes?${params.toString()}`)
     res.json(data)
   } catch (e) {

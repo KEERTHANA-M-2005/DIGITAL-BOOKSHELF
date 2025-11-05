@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getBook } from '../lib/api.js'
+import { sanitizeHtml } from '../lib/sanitize.js'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -204,9 +205,14 @@ export default function BookDetails() {
             {activeTab === 'overview' && (
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Description</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {info.description || 'No description available for this book.'}
-                </p>
+                {info.description ? (
+                  <div
+                    className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(info.description) }}
+                  />
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-300">No description available for this book.</p>
+                )}
               </div>
             )}
 
