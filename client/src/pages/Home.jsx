@@ -79,10 +79,10 @@ export default function Home() {
               Browse Books
             </Link>
             <Link 
-              to="/vlogs" 
-              className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg hover:bg-white hover:text-blue-600 transition-colors"
+              to="/blogs" 
+              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors"
             >
-              Watch Reviews
+              Read Community Posts
             </Link>
           </div>
         </div>
@@ -225,6 +225,10 @@ export default function Home() {
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">✍️</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Community Posts</h3>
+            <p className="text-gray-600 dark:text-gray-300">Read blogs and shorts from fellow readers</p>
               <span className="text-xl md:text-2xl">🎥</span>
             </div>
             <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Community Reviews</h3>

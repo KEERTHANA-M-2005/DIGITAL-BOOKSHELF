@@ -24,14 +24,14 @@ export async function getBook(volumeId) {
   return data
 }
 
-// Vlogs
-export async function listVlogs() {
-  const { data } = await api.get('/api/vlogs')
+// Blogs
+export async function listBlogs() {
+  const { data } = await api.get('/api/blogs')
   return data
 }
 
-export async function createVlog(payload) {
-  const { data } = await api.post('/api/vlogs', payload)
+export async function createBlog(payload) {
+  const { data } = await api.post('/api/blogs', payload)
   return data
 }
 
