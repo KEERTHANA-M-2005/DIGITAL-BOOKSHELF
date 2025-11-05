@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
-import { createVlog, listVlogs } from '../lib/api.js'
+import { createBlog, listBlogs } from '../lib/api.js'
 
-export default function VlogPage() {
+export default function BlogPage() {
   const { user } = useAuth()
-  const [vlogs, setVlogs] = useState([])
+  const [blogs, setBlogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ volumeId: '', title: '', contentUrl: '', kind: 'short' })
   const [msg, setMsg] = useState('')
   const [uploading, setUploading] = useState(false)
-  const [filter, setFilter] = useState('all') // all, short, vlog
+  const [filter, setFilter] = useState('all') // all, short, blog
 
   async function load() {
     setLoading(true)
     try {
-      const data = await listVlogs()
-      setVlogs(data)
+      const data = await listBlogs()
+      setBlogs(data)
     } finally {
       setLoading(false)
     }
@@ -30,7 +30,7 @@ export default function VlogPage() {
     if (!user) { setMsg('Please login to upload.'); setUploading(false); return }
     if (!form.volumeId || !form.title || !form.contentUrl) { setMsg('All fields are required.'); setUploading(false); return }
     try {
-      await createVlog(form)
+      await createBlog(form)
       setForm({ volumeId: '', title: '', contentUrl: '', kind: 'short' })
       setMsg('Uploaded successfully!')
       load()
@@ -41,27 +41,27 @@ export default function VlogPage() {
     }
   }
 
-  const filteredVlogs = vlogs.filter(vlog => filter === 'all' || vlog.kind === filter)
+  const filteredBlogs = blogs.filter(blog => filter === 'all' || blog.kind === filter)
 
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Community Vlogs & Shorts</h1>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Community Blogs & Shorts</h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
           Share your book reviews and discover what others are reading
         </p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Vlogs List */}
+        {/* Blogs List */}
         <div className="lg:col-span-2">
           {/* Filter Tabs */}
           <div className="flex gap-2 mb-6">
             {[
-              { id: 'all', label: 'All', icon: '📺' },
+              { id: 'all', label: 'All', icon: '📰' },
               { id: 'short', label: 'Shorts', icon: '⚡' },
-              { id: 'vlog', label: 'Vlogs', icon: '🎥' }
+              { id: 'blog', label: 'Blogs', icon: '✍️' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -78,7 +78,7 @@ export default function VlogPage() {
             ))}
           </div>
 
-          {/* Vlogs Grid */}
+          {/* Blogs Grid */}
           {loading ? (
             <div className="grid md:grid-cols-2 gap-6">
               {[...Array(4)].map((_, i) => (
@@ -89,9 +89,9 @@ export default function VlogPage() {
                 </div>
               ))}
             </div>
-          ) : filteredVlogs.length === 0 ? (
+          ) : filteredBlogs.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🎬</div>
+              <div className="text-6xl mb-4">📰</div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 No {filter === 'all' ? 'content' : filter + 's'} yet
               </h3>
@@ -104,45 +104,45 @@ export default function VlogPage() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
-              {filteredVlogs.map(vlog => (
-                <div key={vlog._id} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
-                  {/* Video Thumbnail Placeholder */}
+              {filteredBlogs.map(blog => (
+                <div key={blog._id} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+                  {/* Thumbnail Placeholder */}
                   <div className="relative h-48 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-4xl mb-2">
-                        {vlog.kind === 'short' ? '⚡' : '🎥'}
+                        {blog.kind === 'short' ? '⚡' : '✍️'}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {vlog.kind?.toUpperCase()}
+                        {blog.kind?.toUpperCase()}
                       </div>
                     </div>
                     <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded text-xs">
-                      {vlog.kind === 'short' ? 'SHORT' : 'VLOG'}
+                      {blog.kind === 'short' ? 'SHORT' : 'BLOG'}
                     </div>
                   </div>
 
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
-                        {vlog.volumeId}
+                        {blog.volumeId}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(vlog.createdAt).toLocaleDateString()}
+                        {new Date(blog.createdAt).toLocaleDateString()}
                       </span>
                     </div>
 
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                      {vlog.title}
+                      {blog.title}
                     </h3>
 
                     <a 
-                      href={vlog.contentUrl} 
+                      href={blog.contentUrl} 
                       target="_blank" 
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
                     >
-                      <span>▶️</span>
-                      Watch {vlog.kind === 'short' ? 'Short' : 'Vlog'}
+                      <span>🔗</span>
+                      Read {blog.kind === 'short' ? 'Short' : 'Blog'}
                     </a>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function VlogPage() {
                   <input 
                     value={form.title} 
                     onChange={(e)=>setForm(f=>({...f, title: e.target.value}))} 
-                    placeholder="Enter review title" 
+                    placeholder="Enter blog title" 
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
                     required
                   />
@@ -217,7 +217,7 @@ export default function VlogPage() {
                   <input 
                     value={form.contentUrl} 
                     onChange={(e)=>setForm(f=>({...f, contentUrl: e.target.value}))} 
-                    placeholder="YouTube, TikTok, or other video URL" 
+                    placeholder="Link to your blog or short post" 
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
                     required
                   />
@@ -232,8 +232,8 @@ export default function VlogPage() {
                     onChange={(e)=>setForm(f=>({...f, kind: e.target.value}))} 
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
-                    <option value="short">⚡ Short (under 60 seconds)</option>
-                    <option value="vlog">🎥 Vlog (longer content)</option>
+                    <option value="short">⚡ Short</option>
+                    <option value="blog">✍️ Blog</option>
                   </select>
                 </div>
 
@@ -258,9 +258,9 @@ export default function VlogPage() {
             )}
 
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Tips for great reviews:</h3>
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Tips for great posts:</h3>
               <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-                <li>• Keep shorts under 60 seconds</li>
+                <li>• Keep shorts concise and engaging</li>
                 <li>• Share your honest opinion</li>
                 <li>• Mention what you liked/disliked</li>
                 <li>• Include the book's Volume ID</li>
@@ -272,5 +272,3 @@ export default function VlogPage() {
     </div>
   )
 }
-
-

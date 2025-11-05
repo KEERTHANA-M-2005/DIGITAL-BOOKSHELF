@@ -19,12 +19,12 @@ app.get('/api/health', (_req, res) => {
 
 import authRouter from './routes/auth.routes.js'
 import booksRouter from './routes/books.routes.js'
-import vlogsRouter from './routes/vlogs.routes.js'
+import blogsRouter from './routes/blogs.routes.js'
 import cartRouter from './routes/cart.routes.js'
 import progressRouter from './routes/progress.routes.js'
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
-app.use('/api/vlogs', vlogsRouter)
+app.use('/api/blogs', blogsRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/progress', progressRouter)
 

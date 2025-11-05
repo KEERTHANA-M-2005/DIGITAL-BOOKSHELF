@@ -9,7 +9,7 @@ import Home from './pages/Home.jsx'
 import Search from './pages/Search.jsx'
 import BookDetails from './pages/BookDetails.jsx'
 import Cart from './pages/Cart.jsx'
-import VlogPage from './pages/VlogPage.jsx'
+import BlogPage from './pages/BlogPage.jsx'
 import Profile from './pages/Profile.jsx'
 import Chatbot from './pages/Chatbot.jsx'
 import Login from './pages/Login.jsx'
@@ -28,7 +28,7 @@ export default function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/book/:id" element={<BookDetails />} />
                 <Route path="/cart" element={<Cart />} />
-                <Route path="/vlogs" element={<VlogPage />} />
+                <Route path="/blogs" element={<BlogPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/chat" element={<Chatbot />} />
                 <Route path="/login" element={<Login />} />
