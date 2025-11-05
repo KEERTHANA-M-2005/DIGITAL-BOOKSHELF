@@ -12,19 +12,15 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Google Books client
-const googleBase = 'https://www.googleapis.com/books/v1'
-const googleKey = import.meta.env.VITE_GOOGLE_BOOKS_KEY
-
+// Books API via server (hides Google Books API key)
 export async function searchBooks(query) {
-  const params = new URLSearchParams({ q: query, key: googleKey, maxResults: '20' })
-  const { data } = await axios.get(`${googleBase}/volumes?${params.toString()}`)
+  const params = new URLSearchParams({ q: query })
+  const { data } = await api.get(`/api/books/search?${params.toString()}`)
   return data
 }
 
 export async function getBook(volumeId) {
-  const params = new URLSearchParams({ key: googleKey })
-  const { data } = await axios.get(`${googleBase}/volumes/${volumeId}?${params.toString()}`)
+  const { data } = await api.get(`/api/books/${volumeId}`)
   return data
 }
 
