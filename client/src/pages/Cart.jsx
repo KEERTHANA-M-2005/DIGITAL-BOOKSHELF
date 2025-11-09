@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { usePayment } from '../context/PaymentContext.jsx'
+import PaymentModal from '../components/PaymentModal.jsx'
 
 export default function Cart() {
   const { items, total, removeItem, clear, checkout } = useCart()
@@ -9,22 +11,30 @@ export default function Cart() {
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
   const [checkoutStep, setCheckoutStep] = useState('cart') // cart, shipping, payment, success
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const { setPaymentStatus } = usePayment()
 
   async function onCheckout() {
     setMsg('')
-    setLoading(true)
     if (!user) { 
       setMsg('Please login to checkout.')
-      setLoading(false)
       return 
     }
+    setShowPaymentModal(true)
+  }
+
+  const handlePaymentSuccess = async () => {
+    setLoading(true)
     try {
       const res = await checkout()
       setMsg(`Order placed successfully! Order ID: ${res.orderId}`)
       setCheckoutStep('success')
       clear()
+      setShowPaymentModal(false)
+      setPaymentStatus('idle')
     } catch (e) {
       setMsg('Checkout failed. Please try again.')
+      setPaymentStatus('failed')
     } finally {
       setLoading(false)
     }
@@ -257,8 +267,17 @@ export default function Cart() {
           </div>
         </div>
       )}
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        amount={total}
+        onSuccess={handlePaymentSuccess}
+        onCancel={() => {
+          setShowPaymentModal(false)
+          setPaymentStatus('idle')
+        }}
+      />
     </div>
   )
 }
-
 
