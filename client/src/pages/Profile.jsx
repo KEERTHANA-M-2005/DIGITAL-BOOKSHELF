@@ -16,7 +16,7 @@ export default function Profile() {
   const [penNameError, setPenNameError] = useState('')
   const [penNameSaving, setPenNameSaving] = useState(false)
   const [addresses, setAddresses] = useState([])
-  const [addressDraft, setAddressDraft] = useState({ id: '', label: 'Home', line1: '', line2: '', city: '', state: '', zip: '' })
+  const [addressDraft, setAddressDraft] = useState({ id: '', label: 'Home', line1: '', line2: '', city: '', state: '', zip: '', phone: '' })
   const [showAddressModal, setShowAddressModal] = useState(false)
   const [confirmLogout, setConfirmLogout] = useState(false)
   const [showPenEditor, setShowPenEditor] = useState(false)
@@ -107,7 +107,7 @@ export default function Profile() {
   }
 
   function startAddAddress() {
-    setAddressDraft({ id: '', label: 'Home', line1: '', line2: '', city: '', state: '', zip: '' })
+    setAddressDraft({ id: '', label: 'Home', line1: '', line2: '', city: '', state: '', zip: '', phone: '' })
     setShowAddressModal(true)
   }
 
@@ -444,6 +444,7 @@ export default function Profile() {
                         <div className="text-sm text-gray-700 dark:text-gray-300">{addr.line1}</div>
                         {addr.line2 && <div className="text-sm text-gray-700 dark:text-gray-300">{addr.line2}</div>}
                         <div className="text-xs text-gray-500">{addr.city}, {addr.state} {addr.zip}</div>
+                        {addr.phone && <div className="text-xs text-gray-500"> {addr.phone}</div>}
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={()=>startEditAddress(addr)} className="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs">Edit</button>
@@ -493,7 +494,29 @@ export default function Profile() {
               </div>
               <div>
                 <label className="text-xs text-gray-600 dark:text-gray-300">ZIP / PIN</label>
-                <input value={addressDraft.zip} onChange={(e)=>setAddressDraft(d=>({...d, zip: e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" required />
+                <input 
+                  value={addressDraft.zip} 
+                  onChange={(e)=>{
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                    setAddressDraft(d=>({...d, zip: value}))
+                  }} 
+                  placeholder="6-digit ZIP/PIN"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" 
+                  required 
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600 dark:text-gray-300">Phone Number</label>
+                <input 
+                  value={addressDraft.phone} 
+                  onChange={(e)=>{
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 10)
+                    setAddressDraft(d=>({...d, phone: value}))
+                  }} 
+                  placeholder="10-digit phone number"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700" 
+                  required 
+                />
               </div>
               <div className="pt-2 flex items-center justify-end gap-2">
                 <button type="button" onClick={()=>setShowAddressModal(false)} className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Cancel</button>

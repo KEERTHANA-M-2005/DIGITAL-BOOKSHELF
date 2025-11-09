@@ -4,6 +4,8 @@ import { getBook, toggleBookSave, updateProgress } from '../lib/api.js'
 import { sanitizeHtml } from '../lib/sanitize.js'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { usePayment } from '../context/PaymentContext.jsx'
+import PaymentModal from '../components/PaymentModal.jsx'
 
 export default function BookDetails() {
   const { id } = useParams()
@@ -13,8 +15,10 @@ export default function BookDetails() {
   const [activeTab, setActiveTab] = useState('overview')
   const [addedToCart, setAddedToCart] = useState(false)
   const [saved, setSaved] = useState(false)
-  const { addItem } = useCart()
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const { addItem, checkout, clear } = useCart()
   const { user } = useAuth()
+  const { setPaymentStatus } = usePayment()
 
   useEffect(() => {
     async function load() {
@@ -89,6 +93,39 @@ export default function BookDetails() {
     })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
+  }
+
+  const handleBuyNow = () => {
+    if (!user) {
+      navigate('/login', { replace: true })
+      return
+    }
+    // Clear cart and add only this item
+    clear()
+    addItem({ 
+      id, 
+      title: info.title, 
+      price: sale.listPrice?.amount || 0,
+      thumbnail: info.imageLinks?.thumbnail,
+      authors: info.authors,
+      quantity: 1
+    })
+    setShowPaymentModal(true)
+  }
+
+  const handlePaymentSuccess = async () => {
+    try {
+      const res = await checkout()
+      // Show success message
+      clear()
+      setShowPaymentModal(false)
+      setPaymentStatus('idle')
+      // Navigate to profile page to show order
+      navigate('/profile')
+    } catch (e) {
+      console.error('Checkout failed:', e)
+      setPaymentStatus('failed')
+    }
   }
 
   const handleSave = async () => {
@@ -175,9 +212,11 @@ export default function BookDetails() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <button 
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+              onClick={handleBuyNow}
+              disabled={!user}
+              className={`flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:shadow-none`}
             >
-              Buy Now - {price}
+              {user ? `Buy Now - ${price}` : 'Login to Buy'}
             </button>
             <button 
               onClick={handleAddToCart}
@@ -309,8 +348,18 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        amount={sale.listPrice?.amount || 0}
+        onSuccess={handlePaymentSuccess}
+        onCancel={() => {
+          setShowPaymentModal(false)
+          setPaymentStatus('idle')
+          clear()
+        }}
+      />
     </div>
   )
 }
-
 

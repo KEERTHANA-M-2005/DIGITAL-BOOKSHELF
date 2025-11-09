@@ -6,6 +6,7 @@ import ThemeToggle from './components/ThemeToggle.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
+import { PaymentProvider } from './context/PaymentContext.jsx'
 import Home from './pages/Home.jsx'
 import Search from './pages/Search.jsx'
 import BookDetails from './pages/BookDetails.jsx'
@@ -23,7 +24,8 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <CartProvider>
+        <PaymentProvider>
+          <CartProvider>
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1 container mx-auto px-4 py-6">
@@ -45,6 +47,7 @@ export default function App() {
             <ThemeToggle />
           </div>
         </CartProvider>
+        </PaymentProvider>
       </AuthProvider>
     </ThemeProvider>
   )
