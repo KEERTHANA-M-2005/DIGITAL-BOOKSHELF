@@ -13,7 +13,11 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-          <span className="text-xl md:text-2xl">📚</span>
+          <img 
+            src="/logo.jpeg" 
+            alt="Digital Book Shelf Logo" 
+            className="h-8 w-8 md:h-10 md:w-10 object-contain"
+          />
           <span className="hidden sm:block">Digital Book Shelf</span>
           <span className="sm:hidden">DBS</span>
         </Link>
@@ -78,6 +82,32 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+          <NavLink 
+            to="/chat" 
+            className={({isActive}) => 
+              `px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
+                isActive 
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`
+            }
+          >
+            🤖 Chat
+          </NavLink>
+          {user?.isAdmin && (
+            <NavLink 
+              to="/admin" 
+              className={({isActive}) => 
+                `px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
+                  isActive 
+                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                    : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`
+              }
+            >
+              ⚙️ Admin
+            </NavLink>
+          )}
         </nav>
 
         <div className="flex items-center gap-3">

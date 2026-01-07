@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import BookCard from '../components/BookCard.jsx'
 import { searchBooks, listProgress, getBook, recentBlogs } from '../lib/api.js'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -12,6 +12,15 @@ export default function Home() {
   const [loadingProgress, setLoadingProgress] = useState(true)
   const [recentBlogItems, setRecentBlogItems] = useState([])
   const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const handleBookClick = (bookId) => {
+    if (!user) {
+      navigate('/login')
+    } else {
+      navigate(`/book/${bookId}`)
+    }
+  }
 
   useEffect(() => {
     async function loadBooks() {
@@ -84,18 +93,30 @@ export default function Home() {
             Explore thousands of books, share reviews, and connect with fellow readers
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link 
-              to="/search" 
+            <button
+              onClick={() => {
+                if (!user) {
+                  navigate('/login')
+                } else {
+                  navigate('/search')
+                }
+              }}
               className="bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg hover:bg-blue-50 transition-colors shadow-lg"
             >
               Browse Books
-            </Link>
-            <Link 
-              to="/blogs" 
+            </button>
+            <button
+              onClick={() => {
+                if (!user) {
+                  navigate('/login')
+                } else {
+                  navigate('/blogs')
+                }
+              }}
               className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors"
             >
               Read Community Posts
-            </Link>
+            </button>
           </div>
         </div>
         <div className="absolute -right-20 -top-20 w-40 h-40 bg-white/10 rounded-full"></div>
@@ -131,7 +152,11 @@ export default function Home() {
               const pct = totalPages > 0 ? Math.min(100, Math.round((pagesRead / totalPages) * 100)) : 0
               const id = book?.id || progress.volumeId
               return (
-                <Link key={id} to={`/book/${id}`} className="block p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                <button
+                  key={id}
+                  onClick={() => handleBookClick(id)}
+                  className="w-full text-left block p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                >
                   <div className="flex gap-4">
                     {info.imageLinks?.thumbnail && (
                       <img src={info.imageLinks.thumbnail} alt={title} className="w-16 h-24 object-cover rounded-md" />
@@ -147,7 +172,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </button>
               )
             })}
           </div>
@@ -167,11 +192,15 @@ export default function Home() {
             <div className="overflow-x-auto">
               <div className="flex gap-4 pb-2">
                 {recentBlogItems.map(b => (
-                  <Link key={b._id} to={`/blogs/${b._id}`} className="min-w-[260px] p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                  <button
+                    key={b._id}
+                    onClick={() => navigate(`/blogs/${b._id}`)}
+                    className="min-w-[260px] text-left p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                  >
                     <div className="font-medium text-gray-900 dark:text-white line-clamp-1">{b.title}</div>
                     <div className="text-xs text-gray-500">by {b.username}</div>
                     <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">{b.content}</div>
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>
@@ -266,12 +295,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Community Posts</h3>
             <p className="text-gray-600 dark:text-gray-300">Read blogs and shorts from fellow readers</p>
-            <span className="text-xl md:text-2xl">🎥</span>
           </div> {/* Closing div for Community Posts */}
-          <div className="text-center"> {/* Added missing div for Community Reviews */}
-            <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Community Reviews</h3>
-            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">Watch vlogs and shorts from fellow readers</p>
-          </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-xl md:text-2xl">🤖</span>

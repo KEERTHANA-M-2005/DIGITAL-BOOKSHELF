@@ -18,14 +18,14 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/api/auth/login', { email, password })
     localStorage.setItem('auth_token', data.token)
     localStorage.setItem('auth_user', JSON.stringify(data.user))
-    setUser(data.user)
+    setUser({ ...data.user, isAdmin: data.user.isAdmin || false })
   }
 
   async function signup(name, email, password) {
     const { data } = await api.post('/api/auth/signup', { name, email, password })
     localStorage.setItem('auth_token', data.token)
     localStorage.setItem('auth_user', JSON.stringify(data.user))
-    setUser(data.user)
+    setUser({ ...data.user, isAdmin: data.user.isAdmin || false })
   }
 
   function logout() {

@@ -9,6 +9,11 @@ router.get('/saved', requireAuth, async (req, res) => {
   res.json({ savedBooks: user?.savedBooks || [] })
 })
 
+router.get('/liked', requireAuth, async (req, res) => {
+  const user = await User.findById(req.user.id)
+  res.json({ likedBooks: user?.likedBooks || [] })
+})
+
 router.post('/saved/:id', requireAuth, async (req, res) => {
   const { id } = req.params
   const user = await User.findById(req.user.id)

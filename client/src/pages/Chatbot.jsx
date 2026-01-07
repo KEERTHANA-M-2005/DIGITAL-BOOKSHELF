@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { api } from '../lib/api.js'
+import { Link } from 'react-router-dom'
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
     { 
       role: 'assistant', 
-      content: 'Hi! I\'m your AI book recommendation assistant. Tell me your mood or what kind of book you\'re looking for, and I\'ll suggest some great reads! 📚',
-      timestamp: new Date()
+      content: 'Hi! 👋 I\'m your AI book recommendation assistant. Tell me your mood, favorite genres, or what kind of book you\'re looking for, and I\'ll suggest some great reads! 📚\n\nYou can ask me things like:\n• "I want something adventurous"\n• "Recommend mystery books"\n• "What are popular books?"\n• "Help me find romance novels"',
+      timestamp: new Date(),
+      recommendations: null
     }
   ])
   const [input, setInput] = useState('')
@@ -28,34 +30,33 @@ export default function Chatbot() {
     const userMsg = { 
       role: 'user', 
       content: input.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
+      recommendations: null
     }
     setMessages((m)=>[...m, userMsg])
+    const userInput = input.trim()
     setInput('')
     setLoading(true)
 
     try {
-      const mood = input.trim().toLowerCase()
-      const { data } = await api.get('/api/books/recommendations/mood', { params: { mood } })
-      const titles = (data.items || []).slice(0,5).map(v => v.volumeInfo?.title).filter(Boolean)
-      
-      let reply
-      if (titles.length) {
-        reply = `Based on your mood "${mood}", here are some book recommendations:\n\n${titles.map((title, i) => `${i + 1}. ${title}`).join('\n')}\n\nWould you like me to suggest more books or help with something else?`
-      } else {
-        reply = `I couldn't find specific recommendations for "${mood}". Try asking for books by mood like "adventurous", "romantic", "mystery", or "self-help".`
-      }
+      const { data } = await api.post('/api/chatbot/chat', {
+        message: userInput,
+        conversationHistory: messages.slice(-5) // Send last 5 messages for context
+      })
       
       setMessages((m)=>[...m, { 
         role: 'assistant', 
-        content: reply,
-        timestamp: new Date()
+        content: data.response,
+        timestamp: new Date(),
+        recommendations: data.recommendations || null
       }])
     } catch (e) {
+      console.error('Chatbot error:', e)
       setMessages((m)=>[...m, { 
         role: 'assistant', 
-        content: 'Sorry, I encountered an error while fetching recommendations. Please try again in a moment.',
-        timestamp: new Date()
+        content: e.response?.data?.response || 'Sorry, I encountered an error. Please try again in a moment.',
+        timestamp: new Date(),
+        recommendations: null
       }])
     } finally {
       setLoading(false)
@@ -67,12 +68,19 @@ export default function Chatbot() {
     { mood: 'romantic', emoji: '💕', label: 'Romance' },
     { mood: 'mystery', emoji: '🕵️', label: 'Mystery' },
     { mood: 'happy', emoji: '😊', label: 'Feel Good' },
-    { mood: 'sad', emoji: '😢', label: 'Heartwarming' },
-    { mood: 'motivational', emoji: '💪', label: 'Self-Help' }
+    { mood: 'fantasy', emoji: '✨', label: 'Fantasy' },
+    { mood: 'sci-fi', emoji: '🚀', label: 'Sci-Fi' },
+    { mood: 'motivational', emoji: '💪', label: 'Self-Help' },
+    { mood: 'horror', emoji: '👻', label: 'Horror' }
   ]
 
   const handleQuickMood = (mood) => {
-    setInput(mood)
+    setInput(`I want ${mood} books`)
+    // Auto-submit after a short delay
+    setTimeout(() => {
+      const form = document.querySelector('form')
+      if (form) form.requestSubmit()
+    }, 100)
   }
 
   return (
@@ -122,6 +130,41 @@ export default function Chatbot() {
                 <div className="whitespace-pre-wrap text-sm">
                   {message.content}
                 </div>
+                
+                {/* Book Recommendations */}
+                {message.recommendations && message.recommendations.length > 0 && (
+                  <div className="mt-3 space-y-2 pt-3 border-t border-gray-300 dark:border-gray-600">
+                    {message.recommendations.map((book) => (
+                      <Link
+                        key={book.id}
+                        to={`/book/${book.id}`}
+                        className="block p-2 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <div className="flex gap-3">
+                          {book.thumbnail && (
+                            <img 
+                              src={book.thumbnail} 
+                              alt={book.title}
+                              className="w-12 h-16 object-cover rounded flex-shrink-0"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                              {book.title}
+                            </h4>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                              by {book.authors.join(', ')}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 line-clamp-2">
+                              {book.description}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                
                 <div className={`text-xs mt-2 ${
                   message.role === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                 }`}>
@@ -177,10 +220,11 @@ export default function Chatbot() {
       <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
         <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">💡 Tips for better recommendations:</h3>
         <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-          <li>• Describe your current mood (happy, sad, adventurous, etc.)</li>
-          <li>• Mention genres you enjoy (mystery, romance, sci-fi, etc.)</li>
-          <li>• Ask for books similar to ones you've loved</li>
-          <li>• Specify if you want fiction or non-fiction</li>
+          <li>• Describe your current mood (happy, sad, adventurous, romantic, etc.)</li>
+          <li>• Mention genres you enjoy (mystery, romance, sci-fi, fantasy, horror, etc.)</li>
+          <li>• Ask for popular or trending books</li>
+          <li>• Request new releases or bestsellers</li>
+          <li>• Click on recommended books to view details and add to cart</li>
         </ul>
       </div>
     </div>

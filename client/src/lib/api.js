@@ -82,6 +82,11 @@ export async function getSavedBooks() {
   return data.savedBooks || []
 }
 
+export async function getLikedBooks() {
+  const { data } = await api.get('/api/user/liked')
+  return data.likedBooks || []
+}
+
 export async function toggleSavedBook(volumeId) {
   const { data } = await api.post(`/api/user/saved/${volumeId}`)
   return data
@@ -90,6 +95,27 @@ export async function toggleSavedBook(volumeId) {
 // Orders
 export async function listOrders() {
   const { data } = await api.get('/api/orders')
+  return data
+}
+
+// Admin APIs
+export async function getAdminUsers(page = 1, limit = 20, search = '') {
+  const { data } = await api.get('/api/admin/users', { params: { page, limit, search } })
+  return data
+}
+
+export async function getAdminLogs(page = 1, limit = 50, filters = {}) {
+  const { data } = await api.get('/api/admin/logs', { params: { page, limit, ...filters } })
+  return data
+}
+
+export async function getAdminStats() {
+  const { data } = await api.get('/api/admin/stats')
+  return data
+}
+
+export async function toggleUserAdmin(userId, isAdmin) {
+  const { data } = await api.patch(`/api/admin/users/${userId}/admin`, { isAdmin })
   return data
 }
 
