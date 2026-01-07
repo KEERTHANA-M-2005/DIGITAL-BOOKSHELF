@@ -266,12 +266,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Community Posts</h3>
             <p className="text-gray-600 dark:text-gray-300">Read blogs and shorts from fellow readers</p>
-            <span className="text-xl md:text-2xl">🎥</span>
           </div> {/* Closing div for Community Posts */}
-          <div className="text-center"> {/* Added missing div for Community Reviews */}
-            <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Community Reviews</h3>
-            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">Watch vlogs and shorts from fellow readers</p>
-          </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-xl md:text-2xl">🤖</span>

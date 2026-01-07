@@ -13,7 +13,11 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg md:text-xl text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-          <span className="text-xl md:text-2xl">📚</span>
+          <img 
+            src="/logo.jpeg" 
+            alt="Digital Book Shelf Logo" 
+            className="h-8 w-8 md:h-10 md:w-10 object-contain"
+          />
           <span className="hidden sm:block">Digital Book Shelf</span>
           <span className="sm:hidden">DBS</span>
         </Link>

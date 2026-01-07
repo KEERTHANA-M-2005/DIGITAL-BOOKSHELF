@@ -82,6 +82,11 @@ export async function getSavedBooks() {
   return data.savedBooks || []
 }
 
+export async function getLikedBooks() {
+  const { data } = await api.get('/api/user/liked')
+  return data.likedBooks || []
+}
+
 export async function toggleSavedBook(volumeId) {
   const { data } = await api.post(`/api/user/saved/${volumeId}`)
   return data
