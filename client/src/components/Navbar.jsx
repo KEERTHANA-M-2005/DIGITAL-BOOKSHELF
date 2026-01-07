@@ -82,6 +82,18 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+          <NavLink 
+            to="/chat" 
+            className={({isActive}) => 
+              `px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
+                isActive 
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`
+            }
+          >
+            🤖 Chat
+          </NavLink>
         </nav>
 
         <div className="flex items-center gap-3">
