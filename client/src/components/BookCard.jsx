@@ -1,6 +1,19 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function BookCard({ id, title, authors = [], thumbnail, price, rating }) {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const handleViewDetails = (e) => {
+    e.preventDefault()
+    if (!user) {
+      navigate('/login')
+    } else {
+      navigate(`/book/${id}`)
+    }
+  }
+
   return (
     <div className="group border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1">
       <div className="relative overflow-hidden">
@@ -40,12 +53,12 @@ export default function BookCard({ id, title, authors = [], thumbnail, price, ra
           <span className="text-lg font-bold text-gray-900 dark:text-white">
             {price ? `₹${price}` : 'Free'}
           </span>
-          <Link 
-            to={`/book/${id}`} 
+          <button
+            onClick={handleViewDetails}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             View Details
-          </Link>
+          </button>
         </div>
       </div>
     </div>

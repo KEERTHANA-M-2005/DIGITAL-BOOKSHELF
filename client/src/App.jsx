@@ -32,18 +32,18 @@ export default function App() {
             <main className="flex-1 container mx-auto px-4 py-6">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/search" element={<Search />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
                 <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
                 <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-                <Route path="/blogs" element={<BlogPage />} />
+                <Route path="/blogs" element={<ProtectedRoute><BlogPage /></ProtectedRoute>} />
                 <Route path="/blogs/new" element={<ProtectedRoute><BlogNew /></ProtectedRoute>} />
                 <Route path="/blogs/:id" element={<ProtectedRoute><BlogDetails /></ProtectedRoute>} />
                 <Route path="/shorts" element={<ProtectedRoute><Shorts /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/chat" element={<Chatbot />} />
+                <Route path="/chat" element={<ProtectedRoute><Chatbot /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
               </Routes>
             </main>
             <ThemeToggle />
