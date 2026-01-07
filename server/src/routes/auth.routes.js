@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10)
     const user = await User.create({ name, email, passwordHash })
     const token = signJwt({ userId: user._id.toString() })
-    return res.json({ token, user: { id: user._id, name: user.name, email: user.email } })
+    return res.json({ token, user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin || false } })
   } catch (e) {
     return res.status(500).json({ error: 'Failed to signup' })
   }
@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
     const ok = await user.comparePassword(password)
     if (!ok) return res.status(400).json({ error: 'Invalid credentials' })
     const token = signJwt({ userId: user._id.toString() })
-    return res.json({ token, user: { id: user._id, name: user.name, email: user.email } })
+    return res.json({ token, user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin || false } })
   } catch (e) {
     return res.status(500).json({ error: 'Failed to login' })
   }

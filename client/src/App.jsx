@@ -19,6 +19,7 @@ import Shorts from './pages/Shorts.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import Chatbot from './pages/Chatbot.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="/shorts" element={<ProtectedRoute><Shorts /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/chat" element={<Chatbot />} />
+                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
               </Routes>

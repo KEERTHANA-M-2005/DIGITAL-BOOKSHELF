@@ -25,6 +25,7 @@ import progressRouter from './routes/progress.routes.js'
 import userRouter from './routes/user.routes.js'
 import ordersRouter from './routes/orders.routes.js'
 import chatbotRouter from './routes/chatbot.routes.js'
+import adminRouter from './routes/admin.routes.js'
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/blogs', blogsRouter)
@@ -33,6 +34,7 @@ app.use('/api/progress', progressRouter)
 app.use('/api/user', userRouter)
 app.use('/api/orders', ordersRouter)
 app.use('/api/chatbot', chatbotRouter)
+app.use('/api/admin', adminRouter)
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';

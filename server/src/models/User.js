@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, index: true },
   passwordHash: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false },
   savedBooks: [{ type: String }], // Google volume IDs
   likedBooks: [{ type: String }],
   recentBlogs: [{ type: String }],
