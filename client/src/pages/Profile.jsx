@@ -8,6 +8,7 @@ export default function Profile() {
   const { user, logout } = useAuth()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const [progressBooks, setProgressBooks] = useState({})
   const [activeTab, setActiveTab] = useState('progress')
   const [savedIds, setSavedIds] = useState([])
   const [savedBooks, setSavedBooks] = useState([])
@@ -29,6 +30,18 @@ export default function Profile() {
       try {
         const data = await listProgress()
         setItems(data)
+        
+        // Fetch book details for each progress item
+        const bookDetails = {}
+        for (const item of data) {
+          try {
+            const book = await getBook(item.volumeId)
+            bookDetails[item.volumeId] = book.volumeInfo?.title || item.volumeId
+          } catch (error) {
+            bookDetails[item.volumeId] = item.volumeId
+          }
+        }
+        setProgressBooks(bookDetails)
       } finally {
         setLoading(false)
       }
@@ -276,7 +289,7 @@ export default function Profile() {
                 {items.map((item) => (
                   <div key={item._id} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">{item.volumeId}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">{progressBooks[item.volumeId] || item.volumeId}</h3>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(item.updatedAt).toLocaleDateString()}</span>
                     </div>
                     <div className="space-y-3">
